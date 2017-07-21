@@ -173,14 +173,14 @@ impl Peer {
         if vote {
             if self.vote(pid, loop_) {
                 info!("voting done");
-                loop_.disconnect(pid, b"downloader");
+                loop_.disconnect(pid, b"https://maps.ddnet.tw/");
                 return;
             }
             loop_.flush(pid);
         }
         if self.has_timed_out(loop_) {
             error!("timed out due to lack of progress");
-            loop_.disconnect(pid, b"downloader (timeout)");
+            loop_.disconnect(pid, b"https://maps.ddnet.tw/ (timeout)");
             return;
         }
     }
@@ -189,7 +189,7 @@ impl Peer {
             loop_.sendg(pid, ClCallVote {
                 type_: game::CL_CALL_VOTE_TYPE_OPTION,
                 value: vote,
-                reason: b"downloader",
+                reason: b"https://maps.ddnet.tw/",
             });
             visited_votes.insert(vote.to_owned());
         }
@@ -427,7 +427,7 @@ impl<'a, L: Loop> MainLoop<'a, L> {
                         if let Some(_) = size.try_usize() {
                             if name.iter().any(|&b| b == b'/' || b == b'\\') {
                                 error!("invalid map name");
-                                self.loop_.disconnect(pid, b"downloader (error)");
+                                self.loop_.disconnect(pid, b"https://maps.ddnet.tw/ (error)");
                                 return;
                             }
                             match peer.state {
@@ -464,7 +464,7 @@ impl<'a, L: Loop> MainLoop<'a, L> {
                             progress = true;
                         } else {
                             error!("invalid map size");
-                            self.loop_.disconnect(pid, b"downloader (error)");
+                            self.loop_.disconnect(pid, b"https://maps.ddnet.tw/ (error)");
                             return;
                         }
                     },
@@ -484,7 +484,7 @@ impl<'a, L: Loop> MainLoop<'a, L> {
                                     let num_players = num_players(snap);
                                     if num_players > 1 {
                                         error!("more than one player ({}) detected, quitting", num_players);
-                                        self.loop_.disconnect(pid, b"downloader");
+                                        self.loop_.disconnect(pid, b"https://maps.ddnet.tw/");
                                         return;
                                     }
                                 },
@@ -580,8 +580,8 @@ impl<'a, L: Loop> MainLoop<'a, L> {
                     SystemOrGame::System(System::ConReady(..)) => {
                         progress = true;
                         self.loop_.sendg(pid, ClStartInfo {
-                            name: b"downloader",
-                            clan: b"",
+                            name: b"maps.ddnet.tw",
+                            clan: b"DDNet MapDL",
                             country: -1,
                             skin: b"default",
                             use_custom_color: false,
