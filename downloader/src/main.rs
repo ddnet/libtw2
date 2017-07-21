@@ -63,6 +63,7 @@ use std::fs;
 use std::io::Write;
 use std::io;
 use std::mem;
+use std::os::unix::fs::PermissionsExt;
 use std::path::PathBuf;
 use std::str::FromStr;
 use std::str;
@@ -249,7 +250,8 @@ impl Peer {
         let mut path = PathBuf::new();
         path.push("maps");
         path.push(format!("{}_{:08x}.map", &download.name, download.crc));
-        download.file.persist(&path).map(|_| ()).map_err(|e| e.error)
+        download.file.persist(&path).map(|_| ()).map_err(|e| e.error).unwrap();
+        fs::set_permissions(&path, fs::Permissions::from_mode(0o644))
     }
 }
 
